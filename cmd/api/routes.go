@@ -2,7 +2,9 @@ package main
 
 import (
 	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/momomo0206/rest-api-in-go-gin/internal/env"
 	swaggerFiles "github.com/swaggo/files"
@@ -11,6 +13,15 @@ import (
 
 func (app *application) routes() http.Handler {
 	g := gin.Default()
+
+	config := cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+	g.Use(cors.New(config))
 
 	v1 := g.Group("/api/v1")
 	{
@@ -23,7 +34,6 @@ func (app *application) routes() http.Handler {
 		v1.POST("/auth/login", app.login)
 	}
 
-	// middleware
 	authGroup := v1.Group("/")
 	authGroup.Use(app.AuthMiddleware())
 	{
@@ -32,6 +42,8 @@ func (app *application) routes() http.Handler {
 		authGroup.DELETE("/events/:id", app.deleteEvent)
 		authGroup.POST("/events/:id/attendees/:userId", app.addAttendeeToEvent)
 		authGroup.DELETE("/events/:id/attendees/:userId", app.deleteAttendeeFromEvent)
+
+		authGroup.GET("/users", app.getAllUsers)
 	}
 
 	// baseURL := env.GetEnvString("BASE_URL", "http://localhost:8080")

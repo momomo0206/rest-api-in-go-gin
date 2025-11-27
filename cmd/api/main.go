@@ -14,7 +14,7 @@ import (
 
 // @title Go Gin Rest API
 // @version 1.0
-// @description A rest API in Go using Gin framework
+// @description A Rest API in Go using Gin framework
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
